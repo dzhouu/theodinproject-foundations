@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Etch a sketch</title>
+    <link rel="stylesheet" href="./style.css">
+    <script src="./toy.js" defer></script>
+</head>
+<body>
+    <section id="size">
+        <p id="sizePara">16 x 16</p>
+        <input id="sizeSlider" type="range" value="16" min="1" max="100">
+    </section>
+
+    <h1 id="title">Etch-A-Sketch</h1>
+
+    <main>
+        <div class="settings">
+            <input id="colorPicker" type="color" value="#1363DF">
+            <button id="colorBtn" class="active">Color Mode</button>
+            <button id="rainbowBtn">Rainbow mode</button>
+            <button id="eraseBtn">Erase</button>
+            <button id="clearBtn">Clear</button>
+        </div>
+        <div id="grid"></div>
+    </main>
+    
+</body>
+</html>
