@@ -1,65 +1,25 @@
-let rockArt = `
-    _______
----'   ____)
-      (_____)
-      (_____)
-      (____)
----.__(___)
-`;
-
-let paperArt = `
-    _______
----'   ____)____
-          ______)
-          _______)
-         _______)
----.__________)
-`;
-
-let scissorsArt = `
-    _______
----'   ____)____
-          ______)
-       __________)
-      (____)
----.__(___)
-`;
-
-
-game_options = [
+const game_options = [
     {
         name: "Rock",
-        art: rockArt
+        icon: "🪨"
     },
     {
         name: "Paper",
-        art: paperArt
+        icon: "🧻"
     },
     {
         name: "Scissor",
-        art: scissorsArt
+        icon: "✂️"
     }
 ]
 
-function playComputer(){
-    return Math.floor(Math.random() * 3);
+function resetScore(){
+    userScore = 0;
+    computerScore = 0;
 }
 
-function playUser(){
-    let isuserSelectionValid = false;
-
-    while(!isuserSelectionValid) {
-        userSelection = parseInt(prompt("What do you choose? Type 0 for Rock, 1 for Paper or 2 for Scissors."));
-        
-        if(userSelection < 0 || userSelection > 2 || isNaN(userSelection)) {
-            console.log('%cSelect a valid number! (0, 1 or 2)', 'color: red');
-        } else {
-            isuserSelectionValid = true;
-        }
-
-    }
-
-    return userSelection;
+function playComputer(){
+    return Math.floor(Math.random() * 3);
 }
 
 function getWinner(userSelection, computerSelection) {
@@ -82,13 +42,20 @@ function playRound(userSelection, computerSelection, userScore, computerScore) {
 
     let winner = getWinner(userSelection, computerSelection);
     let result = ""
+
+    let userSelectionName = game_options[userSelection]["name"];
+    let computerSelectionName = game_options[computerSelection]["name"];
+    let userSelectionIcon = game_options[userSelection]["icon"]
+    let computerSelectionIcon = game_options[computerSelection]["icon"]
+
+
  
     if(winner == "user") {
         userScore += 1;
-        result = `You win! ${game_options[userSelection]["name"]} beats ${game_options[computerSelection]["name"]}`;
+        result = `You win! <b>${userSelectionName}</b> beats <b>${computerSelectionName}</b>`;
     } else if(winner == "computer") {
         computerScore += 1;
-        result = `You loose! ${game_options[computerSelection]["name"]} beats ${game_options[userSelection]["name"]}`;
+        result = `You loose! <b>${computerSelectionName}</b> beats <b>${userSelectionName}</b>`;
     } else {
         result = "It's a draw";
     }
@@ -97,53 +64,65 @@ function playRound(userSelection, computerSelection, userScore, computerScore) {
         userScore: userScore,
         computerScore: computerScore,
 
-        printMessage:  `
-        Computer chose 
-        ${game_options[computerSelection]["art"]}
-        User chose
-        ${game_options[userSelection]["art"]}
-        ${result}
-        User score: ${userScore}, Computer Score: ${computerScore}
-        ` 
+        printMessage:  `${userSelectionIcon} vs ${computerSelectionIcon}
+${result}
+User score: ${userScore}, Computer Score: ${computerScore}` 
     };
 
     return round;
 
 }
 
-function game() {
-    let userScore = 0;
-    let computerScore = 0;
-
-    let userSelection;
-    let computerSelection;
+function game(e) {
+    
+    let userSelection = this.getAttribute('data-option')
+    let computerSelection = playComputer();
 
     let finalColorMessage;
+    let resultBox = document.querySelector("#result");
 
-    for(let i = 0; i < 5; i++) {
-        console.log(`%cGame Number: ${i+1}`, 'color: green')
-
-        computerSelection = playComputer();
-        userSelection = playUser(); 
-
-        round = playRound(userSelection, computerSelection, userScore, computerScore);
-
-        userScore = round.userScore;
-        computerScore = round.computerScore;
-
-        console.log(round.printMessage);
+    if(resultBox.style.color != "black") {
+        resultBox.style.color = "black";
     }
 
-    if(userScore > computerScore) {
-        finalColorMessage = "green";
-    } else if(userScore < computerScore){
-        finalColorMessage = "red";
-    } else {
-        finalColorMessage = "orange";
+    
+    // console.log(`%cGame Number: ${i+1}`, 'color: green')
+    // userSelection = playUser(); 
+
+
+    round = playRound(userSelection, computerSelection, userScore, computerScore);
+
+    userScore = round.userScore;
+    computerScore = round.computerScore;
+
+    resultBox.innerHTML = round.printMessage;
+    
+
+    if(userScore === 5 || computerScore === 5) {
+
+        if(userScore > computerScore) {
+            finalColorMessage = "green";
+        } else if(userScore < computerScore){
+            finalColorMessage = "red";
+        } else {
+            finalColorMessage = "orange";
+        }
+
+        let result = resultBox.textContent.split("\n");
+        result[2] = `Final Score: User score: ${userScore}, Computer Score: ${computerScore}`;
+
+        resultBox.textContent = result.join("\n");
+        resultBox.style.color = finalColorMessage;
+        resetScore();
     }
 
-    console.log(`%cFinal Score: User score: ${userScore}, Computer Score: ${computerScore}`, `color: ${finalColorMessage}`);
+    //
 }
 
+let userScore = 0;
+let computerScore = 0;
 
-document.getElementById('start').addEventListener('click', game)
+let buttons = document.querySelectorAll('#options button');
+buttons.forEach((btn) => {
+    btn.addEventListener('click', game);
+});
